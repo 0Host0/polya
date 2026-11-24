@@ -74,7 +74,6 @@
   #bouquet{flex:1;width:100%;min-height:0;position:relative;pointer-events:none}
   #flowers{position:absolute;inset:0;width:100%;height:100%}
 
-  @media (max-width:700px){#phrases{width:50vmin}.phrase{font-size:clamp(1.3rem,5.6vmin,2.4rem)}}
   @media (prefers-reduced-motion:reduce){#ring,.heart .counter{animation-duration:240s}}
 </style>
 </head>
@@ -154,9 +153,7 @@ const PHOTOS=3; // photos/1.jpg ... photos/N.jpg (квадратные), N = PHO
 
 function buildHearts(){
   const ring=$('ring');ring.innerHTML='';
-  const m=Math.min(innerWidth,innerHeight);
-  const phone=innerWidth<=700; // на телефоне сердца крупнее
-  const R=m*(phone?.35:.38),S=m*(phone?.3:.2);
+  const m=Math.min(innerWidth,innerHeight),R=m*.38,S=m*.2;
   for(let i=0;i<PHOTOS;i++){
     const a=i/PHOTOS*Math.PI*2-Math.PI/2;
     const h=document.createElement('div');h.className='heart';
