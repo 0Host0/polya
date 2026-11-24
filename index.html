@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Поля, это для тебя</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marck+Script&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#2a0b1f; --bg2:#12050e; --rose:#ff7fae; --soft:#ffd9e6; --text:#fff1f6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;touch-action:none;-webkit-tap-highlight-color:transparent}
+  body{
+    background:radial-gradient(ellipse at 50% 35%,var(--bg1),var(--bg2) 75%);
+    color:var(--text);font-family:'Marck Script',cursive;
+  }
+  #waves{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+  .scene{
+    position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity 1.8s ease,visibility 0s linear 1.8s;
+    padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+  }
+  .scene.active{opacity:1;visibility:visible;pointer-events:auto;transition:opacity 1.8s ease}
+
+  /* --- сцена 1 --- */
+  h1{
+    font-weight:400;font-size:clamp(2.6rem,10vw,6rem);text-align:center;line-height:1.1;
+    text-shadow:0 0 28px rgba(255,127,174,.55);
+    animation:rise 2.6s ease both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+  #go{
+    margin-top:2.4rem;font:inherit;font-size:clamp(1.6rem,5vw,2.2rem);color:var(--text);
+    background:rgba(255,127,174,.14);border:1.5px solid var(--rose);border-radius:999px;
+    padding:.35em 1.9em;cursor:pointer;backdrop-filter:blur(4px);
+    box-shadow:0 0 0 0 rgba(255,127,174,.5);
+    animation:rise 2.6s .8s ease both,pulse 3s 3.4s ease-in-out infinite;
+    transition:background .4s,transform .4s;
+  }
+  #go:hover,#go:focus-visible{background:rgba(255,127,174,.3);transform:scale(1.05);outline:none}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,127,174,.45)}50%{box-shadow:0 0 0 16px rgba(255,127,174,0)}}
+
+  /* --- сцена 2: сердца --- */
+  #ring{position:absolute;left:50%;top:50%;width:0;height:0;animation:spin 70s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .heart{position:absolute;left:0;top:0;filter:drop-shadow(0 0 10px rgba(255,127,174,.65))}
+  .heart .counter{width:100%;height:100%;animation:spin 70s linear infinite reverse}
+  .heart .h-in{
+    position:relative;width:100%;height:100%;clip-path:url(#heart);
+    background:linear-gradient(135deg,#ff9fc2,#c2417a);
+  }
+  .heart img{width:100%;height:100%;object-fit:cover;display:block}
+  .heart .h-in::after{ /* смягчение краёв */
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(ellipse at 50% 45%,transparent 52%,rgba(255,127,174,.7) 100%);
+  }
+  #phrases{position:relative;width:min(52vmin,420px);height:30vmin;display:flex;align-items:center;justify-content:center}
+  .phrase{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:clamp(1.6rem,6.6vmin,3.2rem);line-height:1.15;opacity:0;transition:opacity 2s ease;
+    text-shadow:0 0 22px rgba(255,127,174,.8);
+  }
+  .phrase.on{opacity:1}
+
+  /* --- сцена 3: цветы --- */
+  #s3{justify-content:space-between;padding-top:calc(env(safe-area-inset-top) + 4vh);padding-bottom:calc(env(safe-area-inset-bottom) + 4vh)}
+  #s3 h2,#s3 p{font-weight:400;text-align:center;text-shadow:0 0 22px rgba(255,127,174,.6);position:relative;z-index:2}
+  #s3 h2{font-size:clamp(2.1rem,7vw,3.8rem)}
+  #s3 p{font-size:clamp(1.3rem,4.2vw,2.2rem);max-width:90vw}
+  #bouquet{flex:1;width:100%;min-height:0;position:relative;pointer-events:none}
+  #flowers{position:absolute;inset:0;width:100%;height:100%}
+
+  @media (prefers-reduced-motion:reduce){#ring,.heart .counter{animation-duration:240s}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <clipPath id="heart" clipPathUnits="objectBoundingBox">
+    <path d="M0.5,1 C0.5,1 0,0.62 0,0.3 C0,0.12 0.13,0 0.27,0 C0.4,0 0.48,0.08 0.5,0.16 C0.52,0.08 0.6,0 0.73,0 C0.87,0 1,0.12 1,0.3 C1,0.62 0.5,1 0.5,1 Z"/>
+  </clipPath>
+</svg>
+
+<canvas id="waves"></canvas>
+
+<section class="scene active" id="s1">
+  <h1>Поля, это для тебя</h1>
+  <button id="go" type="button">Нажми</button>
+</section>
+
+<section class="scene" id="s2">
+  <div id="ring"></div>
+  <div id="phrases">
+    <div class="phrase">Ты у меня самая лучшая</div>
+    <div class="phrase">Спасибо за то, что ты есть у меня</div>
+    <div class="phrase">я тебя люблю</div>
+  </div>
+</section>
+
+<section class="scene" id="s3">
+  <h2>Цветы — для тебя</h2>
+  <div id="bouquet"><canvas id="flowers"></canvas></div>
+  <p>они никогда не завянут как и моя любовь к тебе.</p>
+</section>
+
+<script>
+/* ================= ВОЛНЫ ================= */
+const WAVES_ENABLED=true; // true — волны от курсора/касаний, false — отключить
+(()=>{
+  const cv=document.getElementById('waves'),ctx=cv.getContext('2d');
+  if(!WAVES_ENABLED){cv.style.display='none';return}
+  let W,H,dpr;
+  const ripples=[];
+  function size(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+  size();addEventListener('resize',size);
+  let lx=-99,ly=-99,lt=0;
+  function spawn(x,y,strong){
+    const n=performance.now();
+    if(!strong&&(n-lt<130||Math.hypot(x-lx,y-ly)<46))return;
+    lx=x;ly=y;lt=n;
+    ripples.push({x,y,t:n,a:strong?.55:.35});
+    if(ripples.length>14)ripples.shift();
+  }
+  addEventListener('pointermove',e=>spawn(e.clientX,e.clientY,false),{passive:true});
+  addEventListener('pointerdown',e=>spawn(e.clientX,e.clientY,true),{passive:true});
+  const LIFE=4800,SPEED=65;
+  function frame(now){
+    ctx.clearRect(0,0,W,H);
+    for(let i=ripples.length-1;i>=0;i--){
+      const r=ripples[i],age=now-r.t;
+      if(age>LIFE){ripples.splice(i,1);continue}
+      const k=age/LIFE,rad=age/1000*SPEED*(1.2-.4*k),fade=Math.pow(1-k,2)*r.a;
+      // несколько колец — как круги на воде
+      for(let j=0;j<2;j++){
+        const rr=rad-j*22;if(rr<=0)continue;
+        ctx.beginPath();ctx.arc(r.x,r.y,rr,0,6.2832);
+        ctx.strokeStyle=`rgba(255,${150+j*20},${195+j*12},${fade*(0.45-j*0.2)})`;
+        ctx.lineWidth=1.6-j*.5;ctx.stroke();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ================= СЦЕНЫ ================= */
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const PHOTOS=3; // photos/1.jpg ... photos/N.jpg (квадратные), N = PHOTOS
+
+function buildHearts(){
+  const ring=$('ring');ring.innerHTML='';
+  const m=Math.min(innerWidth,innerHeight),R=m*.38,S=m*.2;
+  for(let i=0;i<PHOTOS;i++){
+    const a=i/PHOTOS*Math.PI*2-Math.PI/2;
+    const h=document.createElement('div');h.className='heart';
+    h.style.cssText=`width:${S}px;height:${S}px;transform:translate(${Math.cos(a)*R-S/2}px,${Math.sin(a)*R-S/2}px)`;
+    h.innerHTML=`<div class="counter"><div class="h-in"><img src="photos/${i+1}.jpg" alt="" onerror="this.style.display='none'"></div></div>`;
+    ring.appendChild(h);
+  }
+}
+addEventListener('resize',buildHearts);
+buildHearts();
+
+function show(id){document.querySelectorAll('.scene').forEach(s=>s.classList.toggle('active',s.id===id))}
+
+$('go').addEventListener('click',async()=>{
+  show('s2');
+  await sleep(2200);
+  const ph=[...document.querySelectorAll('.phrase')];
+  for(let i=0;i<ph.length;i++){
+    ph[i].classList.add('on');
+    await sleep(i===ph.length-1?7000:5200);
+    ph[i].classList.remove('on');
+    await sleep(2200);
+  }
+  show('s3');
+  startFlowers();
+});
+
+/* ================= ПИОНЫ ИЗ СИМВОЛОВ ================= */
+let flowersStarted=false;
+function startFlowers(){
+  if(flowersStarted)return;flowersStarted=true;
+  const cv=$('flowers'),ctx=cv.getContext('2d'),box=$('bouquet');
+  const CH='01]987@#!$*?:%%;:+=xX&%{}<>/|~^';
+  const P=[]; // {x,y,z,c,col}
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  const hsl=(h,s,l)=>`hsl(${h|0},${s|0}%,${l|0}%)`;
+  const add=(x,y,z,col)=>P.push({x,y,z,c:CH[(Math.random()*CH.length)|0],col});
+
+  const BUNDLE=[0,-1.8,0];
+  const heads=[[0,.95,0,.58],[-.82,.5,.3,.52],[.82,.55,-.25,.52],[-.38,.02,-.62,.48],[.42,-.02,.62,.5]];
+  const stems=[];
+
+  heads.forEach(([cx,cy,cz,r],hi)=>{
+    const baseHue=336+hi*4; // оттенки розового
+    for(let i=0;i<2600;i++){
+      const s=.4+.6*Math.sqrt(Math.random()),rr=s*r;
+      const phi=Math.acos(1-Math.random()*1.3),th=Math.random()*6.2832;
+      const k=1+.11*Math.sin(5*th+phi*6);
+      const rho=rr*Math.sin(phi)*k;
+      const w=Math.sin(7*th+phi*9+s*5); // «лепестки»
+      const col=hsl(baseHue+rnd(-6,8),rnd(62,92),58+13*w+(s-.7)*22+rnd(-4,4));
+      add(cx+rho*Math.cos(th),cy+rr*Math.cos(phi)*.65,cz+rho*Math.sin(th),col);
+    }
+    for(let i=0;i<50;i++){ // золотая сердцевина
+      const a=Math.random()*6.2832,q=Math.random()*r*.16;
+      add(cx+q*Math.cos(a),cy+r*.62,cz+q*Math.sin(a),hsl(rnd(40,52),90,rnd(55,68)));
+    }
+    for(let i=0;i<120;i++){ // чашелистик
+      const a=Math.random()*6.2832,q=Math.sqrt(Math.random())*r*.35;
+      add(cx+q*Math.cos(a),cy-r*.38+rnd(-.02,.02),cz+q*Math.sin(a),hsl(rnd(105,135),55,rnd(28,38)));
+    }
+    // стебель — кривая Безье
+    const p0=[cx,cy-r*.4,cz],c1=[cx*.35,(cy+BUNDLE[1])/2,cz*.35];
+    stems.push([p0,c1]);
+    for(let i=0;i<=150;i++){
+      const t=i/150,u=1-t;
+      const x=u*u*p0[0]+2*u*t*c1[0]+t*t*BUNDLE[0];
+      const y=u*u*p0[1]+2*u*t*c1[1]+t*t*BUNDLE[1];
+      const z=u*u*p0[2]+2*u*t*c1[2]+t*t*BUNDLE[2];
+      for(let j=0;j<3;j++)add(x+rnd(-.02,.02),y,z+rnd(-.02,.02),hsl(rnd(110,140),50,rnd(24,36)));
+    }
+  });
+
+  // листья
+  for(let n=0;n<9;n++){
+    const [p0,c1]=stems[n%stems.length],t=rnd(.35,.8),u=1-t;
+    const bx=u*u*p0[0]+2*u*t*c1[0],by=u*u*p0[1]+2*u*t*c1[1]+t*t*BUNDLE[1]*0+ (t*t)*BUNDLE[1];
+    const bz=u*u*p0[2]+2*u*t*c1[2];
+    const ang=Math.random()*6.2832,dx=Math.cos(ang),dz=Math.sin(ang),L=rnd(.75,1.05),Wd=rnd(.17,.24);
+    for(let i=0;i<420;i++){
+      const a=Math.random(),b=Math.random()*2-1,wv=b*Wd*Math.sin(Math.PI*Math.pow(a,.8));
+      const x=bx+dx*L*a-dz*wv,z=bz+dz*L*a+dx*wv;
+      const y=by+.35*a-.55*a*a*L+Math.abs(b)*.05;
+      add(x,y,z,Math.abs(b)<.1?hsl(rnd(95,115),55,52):hsl(rnd(115,148),55,rnd(26,42)));
+    }
+  }
+  // лента
+  for(let i=0;i<260;i++){
+    const a=Math.random()*6.2832,y=-1.38+rnd(-.07,.07);
+    add(.19*Math.cos(a),y,.19*Math.sin(a),hsl(rnd(330,345),rnd(60,90),rnd(75,90)));
+  }
+
+  const N=P.length,X=new Float32Array(N),Y=new Float32Array(N),Z=new Float32Array(N);
+  P.forEach((p,i)=>{X[i]=p.x;Y[i]=p.y;Z[i]=p.z});
+
+  let W,H,dpr,f,cw,ch,cols,rows,zb,idx;
+  function size(){
+    dpr=Math.min(devicePixelRatio||1,2);
+    W=box.clientWidth;H=box.clientHeight;if(!W||!H)return;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    f=Math.max(8,Math.round(H/58));cw=f*.62;ch=f*1.02;
+    cols=Math.ceil(W/cw);rows=Math.ceil(H/ch);
+    zb=new Float32Array(cols*rows);idx=new Int32Array(cols*rows);
+    ctx.font=`bold ${f}px "Courier New",monospace`;ctx.textBaseline='top';
+  }
+  new ResizeObserver(size).observe(box);size();
+
+  const D=6;
+  function draw(now){
+    if(W&&H){
+      const ang=now/1000*0.75,ca=Math.cos(ang),sa=Math.sin(ang);
+      const unit=Math.min(H/3.5,W/3.3),cx0=W/2,cy0=H/2,ym=-.25;
+      zb.fill(1e9);idx.fill(-1);
+      for(let i=0;i<N;i++){
+        const x=X[i]*ca-Z[i]*sa,z=X[i]*sa+Z[i]*ca,s=D/(D+z);
+        const px=cx0+x*s*unit,py=cy0-(Y[i]-ym)*s*unit;
+        const c=(px/cw)|0,r=(py/ch)|0;
+        if(c<0||r<0||c>=cols||r>=rows)continue;
+        const k=r*cols+c;
+        if(z<zb[k]){zb[k]=z;idx[k]=i}
+      }
+      ctx.clearRect(0,0,W,H);
+      for(let k=0;k<idx.length;k++){
+        const i=idx[k];if(i<0)continue;
+        const p=P[i];
+        ctx.fillStyle=p.col;
+        ctx.globalAlpha=Math.max(.55,Math.min(1,1.25-zb[k]*.22));
+        ctx.fillText(p.c,(k%cols)*cw,((k/cols)|0)*ch);
+      }
+      ctx.globalAlpha=1;
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+</script>
+</body>
+</html>
